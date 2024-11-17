@@ -9,7 +9,11 @@ async function getRunner(label) {
   const octokit = github.getOctokit(config.input.githubToken);
 
   try {
-    const runners = await octokit.paginate('GET /repos/{owner}/{repo}/actions/runners', config.githubContext);
+    const runners = await octokit.paginate('GET /repos/{owner}/{repo}/actions/runners', {
+      owner: config.githubContext.owner,
+      repo: config.githubContext.repo,
+      per_page: 100,
+    });
     const foundRunners = _.filter(runners, { labels: [{ name: label }] });
     return foundRunners.length > 0 ? foundRunners[0] : null;
   } catch (error) {
